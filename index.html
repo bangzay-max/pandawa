@@ -204,8 +204,9 @@ h1,h2,h3{font-family:var(--font-head);}
 .avatar{
   width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;
   font-family:var(--font-head);font-weight:800;font-size:20px;color:#fff;margin-bottom:16px;
-  background:linear-gradient(135deg,var(--xl-a),var(--axis-b));
+  background:linear-gradient(135deg,var(--xl-a),var(--axis-b));overflow:hidden;flex:none;
 }
+.avatar img{width:100%;height:100%;object-fit:cover;}
 .team-card h3{font-size:16.5px;font-weight:700;}
 .team-card .role{font-size:12px;color:var(--text-faint);font-weight:600;margin-top:3px;letter-spacing:.02em;}
 .team-card .regions{margin-top:16px;display:flex;flex-direction:column;gap:6px;width:100%;}
@@ -315,10 +316,49 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;}
 .footer-bottom{margin-top:48px;padding-top:24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:13px;color:var(--text-faint);}
 @media(max-width:600px){.footer-grid{flex-direction:column;}}
 
-@media (prefers-reduced-motion: reduce){
-  *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}
+.admin-link{background:none;border:none;color:var(--text-faint);font-size:13px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+.admin-link:hover{color:var(--text-dim);}
+
+/* ---------- ADMIN MODAL ---------- */
+.modal-overlay{
+  position:fixed;inset:0;z-index:500;background:rgba(4,4,5,.82);backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .25s ease;
 }
-:focus-visible{outline:2px solid var(--xl-b);outline-offset:3px;}
+.modal-overlay.open{opacity:1;pointer-events:auto;}
+.modal-box{
+  background:var(--bg-1);border:1px solid var(--line-strong);border-radius:var(--radius-l);
+  width:100%;max-width:480px;padding:32px;position:relative;
+}
+.modal-box.wide{max-width:760px;max-height:86vh;overflow-y:auto;}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text-faint);font-size:22px;line-height:1;}
+.modal-close:hover{color:var(--text);}
+.modal-box h3{font-size:20px;font-weight:800;margin-bottom:6px;}
+.modal-box .sub{color:var(--text-dim);font-size:13.5px;margin-bottom:24px;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12.5px;font-weight:700;color:var(--text-dim);letter-spacing:.03em;margin-bottom:7px;}
+.field input[type=text],.field input[type=email],.field input[type=password],.field textarea{
+  width:100%;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;
+  padding:11px 13px;color:var(--text);font-family:inherit;font-size:14px;
+}
+.field textarea{resize:vertical;min-height:70px;}
+.field input:focus,.field textarea:focus{outline:none;border-color:rgba(139,180,255,.55);}
+.form-msg{font-size:13px;margin-top:10px;min-height:18px;}
+.form-msg.err{color:#FF7A9C;}
+.form-msg.ok{color:#7CE0A8;}
+.admin-panel-section{border-top:1px solid var(--line);padding-top:22px;margin-top:22px;}
+.admin-panel-section h4{font-size:14px;font-weight:800;margin-bottom:14px;}
+.admin-member-row{border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px;position:relative;}
+.admin-member-row .row-flex{display:flex;gap:14px;align-items:flex-start;}
+.admin-member-row .thumb{width:52px;height:52px;border-radius:50%;overflow:hidden;flex:none;background:linear-gradient(135deg,var(--xl-a),var(--axis-b));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;}
+.admin-member-row .thumb img{width:100%;height:100%;object-fit:cover;}
+.admin-member-row .row-fields{flex:1;display:flex;flex-direction:column;gap:8px;}
+.admin-member-row input[type=file]{font-size:12px;color:var(--text-dim);}
+.row-remove{background:none;border:1px solid var(--line);color:var(--text-faint);border-radius:8px;padding:6px 10px;font-size:12px;position:absolute;top:12px;right:12px;}
+.row-remove:hover{color:#FF7A9C;border-color:rgba(255,122,156,.4);}
+.btn-block{width:100%;justify-content:center;}
+.btn-sm{padding:9px 16px;font-size:13px;}
+.admin-toprow{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.admin-toprow .btn{margin:0;}
 </style>
 </head>
 <body>
@@ -355,13 +395,13 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;}
   <div class="container hero-inner">
     <div class="eyebrow">REGIONAL DIGITAL SUPPORT</div>
     <h1>PANDAWA<br>TEAM</h1>
-    <p class="hero-sub">Connecting People, Systems &amp; Regions.</p>
-    <div class="hero-tag">Digital Support · System Update · Regional Coordination</div>
+    <p class="hero-sub" id="heroSub">Connecting People, Systems &amp; Regions.</p>
+    <div class="hero-tag" id="heroTag">Digital Support · System Update · Regional Coordination</div>
     <div class="hero-cta">
       <a href="#team" class="btn btn-primary">Meet Our Team</a>
       <a href="#system" class="btn btn-ghost">Explore Our System</a>
     </div>
-    <div class="hero-stats">
+    <div class="hero-stats" id="heroStats">
       <div class="hero-stat"><b data-count="5">0</b><span>TEAM MEMBERS</span></div>
       <div class="hero-stat"><b data-count="10" data-suffix="+">0</b><span>REGIONAL AREAS</span></div>
       <div class="hero-stat"><b data-count="2">0</b><span>CORE SYSTEMS</span></div>
@@ -376,8 +416,8 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;}
     <div class="about-copy reveal">
       <div class="eyebrow">ABOUT PANDAWA TEAM</div>
       <h2 style="margin-top:10px;font-size:clamp(26px,3.6vw,36px);font-weight:800;letter-spacing:-.02em;">Regional team, single mission.</h2>
-      <p class="lead" style="margin-top:20px;">Pandawa Team merupakan team support regional yang berfokus pada koordinasi, dukungan sistem, penyampaian update, serta sosialisasi kepada user di berbagai wilayah.</p>
-      <p>Pandawa Team is a regional support team focused on connecting people, systems and operational needs across multiple regions.</p>
+      <p class="lead" id="aboutLead" style="margin-top:20px;">Pandawa Team merupakan team support regional yang berfokus pada koordinasi, dukungan sistem, penyampaian update, serta sosialisasi kepada user di berbagai wilayah.</p>
+      <p id="aboutBody">Pandawa Team is a regional support team focused on connecting people, systems and operational needs across multiple regions.</p>
       <div class="mini-list">
         <div><span class="tick"></span>5 anggota, 10+ wilayah operasional di seluruh Indonesia</div>
         <div><span class="tick"></span>Menangani 2 sistem inti untuk operasional sales dan HR</div>
@@ -417,15 +457,15 @@ last.sync        : realtime</pre>
       <h2>System We Handle</h2>
       <p>Dua sistem inti yang menopang operasional sales dan kepegawaian di seluruh region.</p>
     </div>
-    <div class="system-grid">
+    <div class="system-grid" id="systemGrid">
       <div class="sys-card drive reveal">
         <div class="glow"></div>
         <div class="sys-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--xl-b)" stroke-width="1.8"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
         </div>
-        <h3>DRIVE OWS</h3>
-        <p>System yang digunakan untuk mendukung aktivitas dan monitoring penjualan team sales di cluster.</p>
-        <div class="sys-tags"><span>Sales Management</span><span>Cluster Monitoring</span><span>Sales Data</span></div>
+        <h3 data-f="title">DRIVE OWS</h3>
+        <p data-f="desc">System yang digunakan untuk mendukung aktivitas dan monitoring penjualan team sales di cluster.</p>
+        <div class="sys-tags" data-f="tags"><span>Sales Management</span><span>Cluster Monitoring</span><span>Sales Data</span></div>
         <div class="sys-detail"><p>Digunakan harian oleh team sales untuk memantau performa cluster secara real-time.</p></div>
       </div>
       <div class="sys-card harpa reveal">
@@ -433,9 +473,9 @@ last.sync        : realtime</pre>
         <div class="sys-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--axis-b)" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
-        <h3>HARPA</h3>
-        <p>System yang digunakan untuk mendukung proses HR dan kepegawaian.</p>
-        <div class="sys-tags"><span>Human Resources</span><span>Employee Management</span><span>Administration</span></div>
+        <h3 data-f="title">HARPA</h3>
+        <p data-f="desc">System yang digunakan untuk mendukung proses HR dan kepegawaian.</p>
+        <div class="sys-tags" data-f="tags"><span>Human Resources</span><span>Employee Management</span><span>Administration</span></div>
         <div class="sys-detail"><p>Mendukung proses administrasi dan pengelolaan data kepegawaian tim di lapangan.</p></div>
       </div>
     </div>
@@ -450,10 +490,10 @@ last.sync        : realtime</pre>
       <h2>Brand Ecosystem</h2>
       <p>Pandawa Team mendukung operasional pada environment PT. XLSmart, meliputi tiga ekosistem brand berikut.</p>
     </div>
-    <div class="brand-grid">
-      <div class="brand-card xl reveal"><div class="brand-logo">XL</div><p>Connectivity &amp; Digital Services</p></div>
-      <div class="brand-card axis reveal"><div class="brand-logo">AXIS</div><p>Digital &amp; Youth Experience</p></div>
-      <div class="brand-card smart reveal"><div class="brand-logo">Smart</div><p>Smart Connectivity</p></div>
+    <div class="brand-grid" id="brandGrid">
+      <div class="brand-card xl reveal"><div class="brand-logo">XL</div><p data-f="desc">Connectivity &amp; Digital Services</p></div>
+      <div class="brand-card axis reveal"><div class="brand-logo">AXIS</div><p data-f="desc">Digital &amp; Youth Experience</p></div>
+      <div class="brand-card smart reveal"><div class="brand-logo">Smart</div><p data-f="desc">Smart Connectivity</p></div>
     </div>
     <p class="brand-note">Logo di atas merupakan placeholder teks dan dapat diganti dengan asset resmi. Pandawa Team menangani sistem dan support operasional pada environment PT. XLSmart, bukan merepresentasikan corporate branding resmi.</p>
   </div>
@@ -487,26 +527,26 @@ last.sync        : realtime</pre>
       <h2>What We Do</h2>
       <p>Empat aktivitas utama yang menjadi tanggung jawab harian Pandawa Team.</p>
     </div>
-    <div class="activity-grid">
+    <div class="activity-grid" id="activityGrid">
       <div class="act-card reveal">
         <div class="act-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="M12 8v4l3 3"/></svg></div>
-        <h3>System Support</h3>
-        <p>Membantu memastikan sistem yang digunakan oleh team dapat berjalan dan digunakan dengan baik.</p>
+        <h3 data-f="title">System Support</h3>
+        <p data-f="desc">Membantu memastikan sistem yang digunakan oleh team dapat berjalan dan digunakan dengan baik.</p>
       </div>
       <div class="act-card reveal">
         <div class="act-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg></div>
-        <h3>System Update</h3>
-        <p>Menyampaikan informasi mengenai perubahan, update, maupun improvement pada aplikasi/sistem.</p>
+        <h3 data-f="title">System Update</h3>
+        <p data-f="desc">Menyampaikan informasi mengenai perubahan, update, maupun improvement pada aplikasi/sistem.</p>
       </div>
       <div class="act-card reveal">
         <div class="act-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M18 8a3 3 0 1 0-2.8-4"/><path d="M6 15a3 3 0 1 0 2.8 4"/><path d="M8.6 13.5l6.8-3.9M8.6 10.5l6.8 3.9"/></svg></div>
-        <h3>Socialization</h3>
-        <p>Mensosialisasikan update sistem kepada team/user di wilayah terkait.</p>
+        <h3 data-f="title">Socialization</h3>
+        <p data-f="desc">Mensosialisasikan update sistem kepada team/user di wilayah terkait.</p>
       </div>
       <div class="act-card reveal">
         <div class="act-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M4 12h4M16 12h4M12 4v4M12 16v4"/></svg></div>
-        <h3>Coordination</h3>
-        <p>Melakukan koordinasi antar-region dan memastikan informasi project tersampaikan dengan baik.</p>
+        <h3 data-f="title">Coordination</h3>
+        <p data-f="desc">Melakukan koordinasi antar-region dan memastikan informasi project tersampaikan dengan baik.</p>
       </div>
     </div>
   </div>
@@ -529,11 +569,7 @@ last.sync        : realtime</pre>
             <stop offset="100%" stop-color="var(--smart-a)"/>
           </linearGradient>
         </defs>
-        <line class="net-line" x1="400" y1="50" x2="120" y2="190"/>
-        <line class="net-line" x1="400" y1="50" x2="290" y2="200"/>
-        <line class="net-line" x1="400" y1="50" x2="400" y2="205"/>
-        <line class="net-line" x1="400" y1="50" x2="520" y2="200"/>
-        <line class="net-line" x1="400" y1="50" x2="680" y2="190"/>
+        <g id="netLines"></g>
         <circle class="net-node" cx="400" cy="50" r="30"/>
         <text x="400" y="55" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">PANDAWA</text>
         <g id="netMembers"></g>
@@ -574,96 +610,275 @@ last.sync        : realtime</pre>
     </div>
     <div class="footer-bottom">
       <span>© 2026 Pandawa Team</span>
-      <span>DRIVE OWS · HARPA</span>
+      <span><button class="admin-link" id="adminLinkBtn">Admin</button></span>
     </div>
   </div>
 </footer>
 
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginOverlay">
+  <div class="modal-box">
+    <button class="modal-close" data-close="loginOverlay">&times;</button>
+    <h3>Admin Login</h3>
+    <p class="sub">Masuk untuk edit data website.</p>
+    <form id="loginForm">
+      <div class="field"><label>Email</label><input type="email" id="loginEmail" required autocomplete="username"></div>
+      <div class="field"><label>Password</label><input type="password" id="loginPassword" required autocomplete="current-password"></div>
+      <button type="submit" class="btn btn-primary btn-block" id="loginBtn">Login</button>
+      <div class="form-msg" id="loginMsg"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ADMIN PANEL MODAL -->
+<div class="modal-overlay" id="adminOverlay">
+  <div class="modal-box wide">
+    <button class="modal-close" data-close="adminOverlay">&times;</button>
+    <div class="admin-toprow">
+      <h3 style="margin-bottom:0;">Admin Panel</h3>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn">Logout</button>
+    </div>
+    <p class="sub">Edit konten website. Klik Simpan Semua di bawah setelah selesai.</p>
+
+    <div class="admin-panel-section">
+      <h4>Hero &amp; About</h4>
+      <div class="field"><label>Hero Subheadline</label><input type="text" id="f-hero-sub"></div>
+      <div class="field"><label>Hero Tagline</label><input type="text" id="f-hero-tag"></div>
+      <div class="field"><label>About — Lead (ID)</label><textarea id="f-about-lead"></textarea></div>
+      <div class="field"><label>About — Body (EN)</label><textarea id="f-about-body"></textarea></div>
+    </div>
+
+    <div class="admin-panel-section">
+      <h4>Team Members</h4>
+      <div id="adminTeamList"></div>
+      <button class="btn btn-ghost btn-sm" id="addMemberBtn" type="button">+ Tambah Anggota</button>
+    </div>
+
+    <div class="admin-panel-section">
+      <h4>System We Handle</h4>
+      <div id="adminSystemList"></div>
+    </div>
+
+    <div class="admin-panel-section">
+      <h4>Brand Ecosystem</h4>
+      <div id="adminBrandList"></div>
+    </div>
+
+    <div class="admin-panel-section">
+      <h4>What We Do</h4>
+      <div id="adminActivityList"></div>
+    </div>
+
+    <div class="admin-panel-section">
+      <button class="btn btn-primary btn-block" id="saveAllBtn">Simpan Semua</button>
+      <div class="form-msg" id="saveMsg"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
-// ---------- DATA (edit di sini untuk update tim / region) ----------
-const TEAM = [
-  {name:"Sutomo", regions:["Northern Sumatra","Southern Sumatra"]},
-  {name:"Zaenudin", regions:["Central Java","West Java"]},
-  {name:"Dikdik", regions:["Kalimantan","Jakarta Banten"]},
-  {name:"Merry", regions:["Bali Nusra","Sulawesi"]},
-  {name:"Yuda Maryani", regions:["East Java","Kalimantan"]},
-];
+// ================= SUPABASE CONFIG =================
+const SUPABASE_URL = "https://ugmzsbetbalfkbsttedr.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVnbXpzYmV0YmFsZmtic3R0ZWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwNDQ5NDEsImV4cCI6MjEwNTYyMDk0MX0.C5-eUo5V5KSTns1YxdelLx86DKJOs9kKkcQWHYVsss0";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const CONTENT_TABLE = "pandawa_content";
+const PHOTO_BUCKET = "photos";
+
+// ================= DEFAULT CONTENT =================
+const DEFAULT_CONTENT = {
+  hero: {
+    sub: "Connecting People, Systems & Regions.",
+    tag: "Digital Support · System Update · Regional Coordination",
+    stats: [{value:5,suffix:""},{value:10,suffix:"+"},{value:2,suffix:""},{value:3,suffix:""}]
+  },
+  about: {
+    lead: "Pandawa Team merupakan team support regional yang berfokus pada koordinasi, dukungan sistem, penyampaian update, serta sosialisasi kepada user di berbagai wilayah.",
+    body: "Pandawa Team is a regional support team focused on connecting people, systems and operational needs across multiple regions."
+  },
+  team: [
+    {name:"Sutomo", role:"TEAM MEMBER", regions:["Northern Sumatra","Southern Sumatra"], photo:""},
+    {name:"Zaenudin", role:"TEAM MEMBER", regions:["Central Java","West Java"], photo:""},
+    {name:"Dikdik", role:"TEAM MEMBER", regions:["Kalimantan","Jakarta Banten"], photo:""},
+    {name:"Merry", role:"TEAM MEMBER", regions:["Bali Nusra","Sulawesi"], photo:""},
+    {name:"Yuda Maryani", role:"TEAM MEMBER", regions:["East Java","Kalimantan"], photo:""}
+  ],
+  systems: [
+    {title:"DRIVE OWS", desc:"System yang digunakan untuk mendukung aktivitas dan monitoring penjualan team sales di cluster.", tags:["Sales Management","Cluster Monitoring","Sales Data"]},
+    {title:"HARPA", desc:"System yang digunakan untuk mendukung proses HR dan kepegawaian.", tags:["Human Resources","Employee Management","Administration"]}
+  ],
+  brands: [
+    {desc:"Connectivity & Digital Services"},
+    {desc:"Digital & Youth Experience"},
+    {desc:"Smart Connectivity"}
+  ],
+  activities: [
+    {title:"System Support", desc:"Membantu memastikan sistem yang digunakan oleh team dapat berjalan dan digunakan dengan baik."},
+    {title:"System Update", desc:"Menyampaikan informasi mengenai perubahan, update, maupun improvement pada aplikasi/sistem."},
+    {title:"Socialization", desc:"Mensosialisasikan update sistem kepada team/user di wilayah terkait."},
+    {title:"Coordination", desc:"Melakukan koordinasi antar-region dan memastikan informasi project tersampaikan dengan baik."}
+  ]
+};
+
+let CONTENT = JSON.parse(JSON.stringify(DEFAULT_CONTENT));
 
 function initials(name){
-  return name.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
+  return (name||"?").split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
+}
+function avatarInner(m){
+  return m.photo ? `<img src="${m.photo}" alt="${m.name}">` : initials(m.name);
 }
 
-// render team cards
-const teamGrid = document.getElementById('teamGrid');
-TEAM.forEach((m,i)=>{
-  const card = document.createElement('div');
-  card.className = 'team-card reveal';
-  card.style.setProperty('--i', i);
-  card.innerHTML = `
-    <div class="inner">
-      <div class="avatar">${initials(m.name)}</div>
-      <h3>${m.name}</h3>
-      <div class="role">TEAM MEMBER</div>
-      <div class="regions">
-        ${m.regions.map(r=>`<div class="region-pill"><svg viewBox="0 0 24 24" fill="none" stroke="#8FB8FF" stroke-width="2"><path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>${r}</div>`).join('')}
-      </div>
-    </div>`;
-  card.addEventListener('click', ()=>{
-    document.querySelectorAll('.team-card').forEach(c=>c.classList.remove('active'));
-    card.classList.add('active');
-    highlightRegionsFor(m.name);
-  });
-  teamGrid.appendChild(card);
-});
-
-// region pills
-const REGIONS = [...new Set(TEAM.flatMap(m=>m.regions))];
-const regionNodes = document.getElementById('regionNodes');
-const regionInfo = document.getElementById('regionInfo');
-REGIONS.forEach(r=>{
-  const pill = document.createElement('div');
-  pill.className = 'region-pill2';
-  pill.dataset.region = r;
-  pill.innerHTML = `<span class="glowdot"></span>${r}`;
-  pill.addEventListener('click', ()=>{
-    document.querySelectorAll('.region-pill2').forEach(p=>p.classList.remove('on'));
-    pill.classList.add('on');
-    const owner = TEAM.find(m=>m.regions.includes(r));
-    regionInfo.innerHTML = `<b>${r}</b> ditangani oleh <b>${owner.name}</b>`;
-    document.querySelectorAll('.team-card').forEach(c=>{
-      c.classList.toggle('active', c.querySelector('h3').textContent === owner.name);
+// ---------- RENDER: TEAM ----------
+function renderTeam(){
+  const teamGrid = document.getElementById('teamGrid');
+  teamGrid.innerHTML = "";
+  CONTENT.team.forEach((m,i)=>{
+    const card = document.createElement('div');
+    card.className = 'team-card reveal in';
+    card.style.setProperty('--i', i);
+    card.innerHTML = `
+      <div class="inner">
+        <div class="avatar">${avatarInner(m)}</div>
+        <h3>${m.name}</h3>
+        <div class="role">${m.role||"TEAM MEMBER"}</div>
+        <div class="regions">
+          ${m.regions.map(r=>`<div class="region-pill"><svg viewBox="0 0 24 24" fill="none" stroke="#8FB8FF" stroke-width="2"><path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>${r}</div>`).join('')}
+        </div>
+      </div>`;
+    card.addEventListener('click', ()=>{
+      document.querySelectorAll('.team-card').forEach(c=>c.classList.remove('active'));
+      card.classList.add('active');
+      highlightRegionsFor(m.name);
     });
+    teamGrid.appendChild(card);
   });
-  regionNodes.appendChild(pill);
-});
+}
 
 function highlightRegionsFor(name){
-  const member = TEAM.find(m=>m.name===name);
+  const member = CONTENT.team.find(m=>m.name===name);
+  if(!member) return;
   document.querySelectorAll('.region-pill2').forEach(p=>{
     p.classList.toggle('on', member.regions.includes(p.dataset.region));
   });
-  regionInfo.innerHTML = `<b>${name}</b> menangani <b>${member.regions.join(", ")}</b>`;
+  document.getElementById('regionInfo').innerHTML = `<b>${name}</b> menangani <b>${member.regions.join(", ")}</b>`;
 }
 
-// network svg member nodes
-const netMembers = document.getElementById('netMembers');
-const positions = [[120,190],[290,200],[400,205],[520,200],[680,190]];
-TEAM.forEach((m,i)=>{
-  const [x,y] = positions[i];
-  const g = document.createElementNS("http://www.w3.org/2000/svg","g");
-  g.innerHTML = `<circle class="net-node" cx="${x}" cy="${y}" r="26"/>
-    <circle class="net-dot" cx="${x}" cy="${y-32}" r="0"/>
-    <text x="${x}" y="${y+4}" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">${initials(m.name)}</text>`;
-  netMembers.appendChild(g);
-});
+// ---------- RENDER: REGIONS ----------
+function renderRegions(){
+  const regionNodes = document.getElementById('regionNodes');
+  regionNodes.innerHTML = "";
+  const regions = [...new Set(CONTENT.team.flatMap(m=>m.regions))];
+  regions.forEach(r=>{
+    const pill = document.createElement('div');
+    pill.className = 'region-pill2';
+    pill.dataset.region = r;
+    pill.innerHTML = `<span class="glowdot"></span>${r}`;
+    pill.addEventListener('click', ()=>{
+      document.querySelectorAll('.region-pill2').forEach(p=>p.classList.remove('on'));
+      pill.classList.add('on');
+      const owner = CONTENT.team.find(m=>m.regions.includes(r));
+      document.getElementById('regionInfo').innerHTML = `<b>${r}</b> ditangani oleh <b>${owner.name}</b>`;
+      document.querySelectorAll('.team-card').forEach(c=>{
+        c.classList.toggle('active', c.querySelector('h3').textContent === owner.name);
+      });
+    });
+    regionNodes.appendChild(pill);
+  });
+  document.getElementById('regionInfo').textContent = "Klik region untuk melihat penanggung jawab.";
+}
 
-// navbar scroll state
+// ---------- RENDER: NETWORK ----------
+function renderNetwork(){
+  const netMembers = document.getElementById('netMembers');
+  const netLines = document.getElementById('netLines');
+  netMembers.innerHTML = ""; netLines.innerHTML = "";
+  const n = CONTENT.team.length;
+  const positions = [];
+  const startX = 120, endX = 680, cy = n<=1?205:195;
+  for(let i=0;i<n;i++){
+    const x = n===1 ? 400 : startX + (endX-startX)*(i/(n-1));
+    const y = i%2===0 ? 190 : 205;
+    positions.push([x,y]);
+  }
+  positions.forEach(([x,y])=>{
+    const line = document.createElementNS("http://www.w3.org/2000/svg","line");
+    line.setAttribute("class","net-line");
+    line.setAttribute("x1",400); line.setAttribute("y1",50);
+    line.setAttribute("x2",x); line.setAttribute("y2",y);
+    netLines.appendChild(line);
+  });
+  CONTENT.team.forEach((m,i)=>{
+    const [x,y] = positions[i];
+    const g = document.createElementNS("http://www.w3.org/2000/svg","g");
+    g.innerHTML = `<circle class="net-node" cx="${x}" cy="${y}" r="26"/>
+      <text x="${x}" y="${y+4}" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">${initials(m.name)}</text>`;
+    netMembers.appendChild(g);
+  });
+}
+
+// ---------- RENDER: STATIC SECTIONS ----------
+function renderStatic(){
+  document.getElementById('heroSub').textContent = CONTENT.hero.sub;
+  document.getElementById('heroTag').textContent = CONTENT.hero.tag;
+  const statEls = document.querySelectorAll('#heroStats b');
+  CONTENT.hero.stats.forEach((s,i)=>{
+    if(!statEls[i]) return;
+    statEls[i].dataset.count = s.value;
+    statEls[i].dataset.suffix = s.suffix||"";
+    if(statEls[i].dataset.counted){ statEls[i].textContent = s.value + (s.suffix||""); }
+  });
+  document.getElementById('aboutLead').textContent = CONTENT.about.lead;
+  document.getElementById('aboutBody').textContent = CONTENT.about.body;
+
+  const sysCards = document.querySelectorAll('#systemGrid .sys-card');
+  CONTENT.systems.forEach((s,i)=>{
+    const card = sysCards[i]; if(!card) return;
+    card.querySelector('[data-f="title"]').textContent = s.title;
+    card.querySelector('[data-f="desc"]').textContent = s.desc;
+    card.querySelector('[data-f="tags"]').innerHTML = s.tags.map(t=>`<span>${t}</span>`).join('');
+  });
+
+  const brandCards = document.querySelectorAll('#brandGrid .brand-card');
+  CONTENT.brands.forEach((b,i)=>{
+    const card = brandCards[i]; if(!card) return;
+    card.querySelector('[data-f="desc"]').textContent = b.desc;
+  });
+
+  const actCards = document.querySelectorAll('#activityGrid .act-card');
+  CONTENT.activities.forEach((a,i)=>{
+    const card = actCards[i]; if(!card) return;
+    card.querySelector('[data-f="title"]').textContent = a.title;
+    card.querySelector('[data-f="desc"]').textContent = a.desc;
+  });
+}
+
+function renderAll(){
+  renderStatic();
+  renderTeam();
+  renderRegions();
+  renderNetwork();
+}
+renderAll();
+
+// ---------- LOAD FROM SUPABASE ----------
+async function loadContent(){
+  try{
+    const { data, error } = await sb.from(CONTENT_TABLE).select('*').eq('id',1).single();
+    if(error || !data) return;
+    ['hero','about','team','systems','brands','activities'].forEach(k=>{
+      if(data[k]) CONTENT[k] = data[k];
+    });
+    renderAll();
+  }catch(e){ /* table belum ada / offline — pakai default */ }
+}
+loadContent();
+
+// ================= NAV / UI (tidak berubah) =================
 const navbar = document.getElementById('navbar');
 window.addEventListener('scroll', ()=>{
   navbar.classList.toggle('scrolled', window.scrollY > 30);
 });
-
-// mobile menu
 const navToggle = document.getElementById('navToggle');
 const mobileMenu = document.getElementById('mobileMenu');
 const mobileClose = document.getElementById('mobileClose');
@@ -671,15 +886,12 @@ navToggle.addEventListener('click', ()=>mobileMenu.classList.add('open'));
 mobileClose.addEventListener('click', ()=>mobileMenu.classList.remove('open'));
 mobileMenu.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobileMenu.classList.remove('open')));
 
-// reveal on scroll
-const revealEls = document.querySelectorAll('.reveal');
+const revealEls = document.querySelectorAll('.section-head.reveal, .about-copy.reveal, .about-visual.reveal, .sys-card.reveal, .brand-card.reveal, .region-wrap.reveal, .act-card.reveal, .network-wrap.reveal, .cta-section.reveal');
 const io = new IntersectionObserver((entries)=>{
   entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
 },{threshold:0.15});
 revealEls.forEach(el=>io.observe(el));
 
-// counters
-const counters = document.querySelectorAll('[data-count]');
 const counterIO = new IntersectionObserver((entries)=>{
   entries.forEach(e=>{
     if(!e.isIntersecting) return;
@@ -693,12 +905,12 @@ const counterIO = new IntersectionObserver((entries)=>{
       if(cur >= target){ cur = target; clearInterval(t); }
       el.textContent = cur + suffix;
     }, 40);
+    el.dataset.counted = "1";
     counterIO.unobserve(el);
   });
 },{threshold:0.5});
-counters.forEach(c=>counterIO.observe(c));
+document.querySelectorAll('[data-count]').forEach(c=>counterIO.observe(c));
 
-// hero particles
 const particleWrap = document.getElementById('particles');
 for(let i=0;i<18;i++){
   const p = document.createElement('span');
@@ -708,6 +920,166 @@ for(let i=0;i<18;i++){
   p.style.animationDuration = (6+Math.random()*6)+'s';
   particleWrap.appendChild(p);
 }
+
+// ================= ADMIN AUTH =================
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click', ()=>closeModal(b.dataset.close)));
+
+document.getElementById('adminLinkBtn').addEventListener('click', async ()=>{
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session){ openAdminPanel(); } else { openModal('loginOverlay'); }
+});
+
+document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const msg = document.getElementById('loginMsg');
+  msg.textContent = "Memproses..."; msg.className = "form-msg";
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if(error){ msg.textContent = "Login gagal: " + error.message; msg.className = "form-msg err"; return; }
+  msg.textContent = ""; document.getElementById('loginForm').reset();
+  closeModal('loginOverlay');
+  openAdminPanel();
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+  await sb.auth.signOut();
+  closeModal('adminOverlay');
+});
+
+// ================= ADMIN PANEL =================
+function openAdminPanel(){
+  document.getElementById('f-hero-sub').value = CONTENT.hero.sub;
+  document.getElementById('f-hero-tag').value = CONTENT.hero.tag;
+  document.getElementById('f-about-lead').value = CONTENT.about.lead;
+  document.getElementById('f-about-body').value = CONTENT.about.body;
+  renderAdminTeam();
+  renderAdminSystems();
+  renderAdminBrands();
+  renderAdminActivities();
+  document.getElementById('saveMsg').textContent = "";
+  openModal('adminOverlay');
+}
+
+function renderAdminTeam(){
+  const wrap = document.getElementById('adminTeamList');
+  wrap.innerHTML = "";
+  CONTENT.team.forEach((m,i)=>{
+    const row = document.createElement('div');
+    row.className = 'admin-member-row';
+    row.innerHTML = `
+      <button type="button" class="row-remove" data-remove="${i}">Hapus</button>
+      <div class="row-flex">
+        <div class="thumb" data-thumb>${avatarInner(m)}</div>
+        <div class="row-fields">
+          <input type="text" class="m-name" placeholder="Nama" value="${m.name}">
+          <input type="text" class="m-regions" placeholder="Region (pisahkan koma)" value="${m.regions.join(", ")}">
+          <input type="file" class="m-photo" accept="image/*">
+          <div class="form-msg" data-upload-msg></div>
+        </div>
+      </div>`;
+    row.querySelector('[data-remove]').addEventListener('click', ()=>{
+      CONTENT.team.splice(i,1); renderAdminTeam();
+    });
+    row.querySelector('.m-photo').addEventListener('change', async (e)=>{
+      const file = e.target.files[0]; if(!file) return;
+      const msgEl = row.querySelector('[data-upload-msg]');
+      msgEl.textContent = "Mengupload..."; msgEl.className = "form-msg";
+      try{
+        const path = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'')}`;
+        const { error } = await sb.storage.from(PHOTO_BUCKET).upload(path, file, { upsert:true });
+        if(error) throw error;
+        const { data:pub } = sb.storage.from(PHOTO_BUCKET).getPublicUrl(path);
+        m.photo = pub.publicUrl;
+        row.querySelector('[data-thumb]').innerHTML = `<img src="${m.photo}">`;
+        msgEl.textContent = "Foto terupload."; msgEl.className = "form-msg ok";
+      }catch(err){ msgEl.textContent = "Upload gagal: " + err.message; msgEl.className = "form-msg err"; }
+    });
+    wrap.appendChild(row);
+  });
+}
+document.getElementById('addMemberBtn').addEventListener('click', ()=>{
+  CONTENT.team.push({name:"Anggota Baru", role:"TEAM MEMBER", regions:[], photo:""});
+  renderAdminTeam();
+});
+
+function renderAdminSystems(){
+  const wrap = document.getElementById('adminSystemList');
+  wrap.innerHTML = "";
+  CONTENT.systems.forEach((s)=>{
+    const row = document.createElement('div');
+    row.className = 'field';
+    row.innerHTML = `
+      <label>${s.title}</label>
+      <input type="text" class="s-desc" value="${s.desc}" style="margin-bottom:6px;">
+      <input type="text" class="s-tags" value="${s.tags.join(", ")}" placeholder="Tags (pisahkan koma)">`;
+    wrap.appendChild(row);
+  });
+}
+
+function renderAdminBrands(){
+  const wrap = document.getElementById('adminBrandList');
+  wrap.innerHTML = "";
+  const names = ["XL","AXIS","Smart"];
+  CONTENT.brands.forEach((b,i)=>{
+    const row = document.createElement('div');
+    row.className = 'field';
+    row.innerHTML = `<label>${names[i]||''}</label><input type="text" class="b-desc" value="${b.desc}">`;
+    wrap.appendChild(row);
+  });
+}
+
+function renderAdminActivities(){
+  const wrap = document.getElementById('adminActivityList');
+  wrap.innerHTML = "";
+  CONTENT.activities.forEach((a)=>{
+    const row = document.createElement('div');
+    row.className = 'field';
+    row.innerHTML = `<label>${a.title}</label><input type="text" class="a-desc" value="${a.desc}">`;
+    wrap.appendChild(row);
+  });
+}
+
+document.getElementById('saveAllBtn').addEventListener('click', async ()=>{
+  const saveMsg = document.getElementById('saveMsg');
+  saveMsg.textContent = "Menyimpan..."; saveMsg.className = "form-msg";
+
+  CONTENT.hero.sub = document.getElementById('f-hero-sub').value;
+  CONTENT.hero.tag = document.getElementById('f-hero-tag').value;
+  CONTENT.about.lead = document.getElementById('f-about-lead').value;
+  CONTENT.about.body = document.getElementById('f-about-body').value;
+
+  document.querySelectorAll('#adminTeamList .admin-member-row').forEach((row,i)=>{
+    CONTENT.team[i].name = row.querySelector('.m-name').value;
+    CONTENT.team[i].regions = row.querySelector('.m-regions').value.split(',').map(s=>s.trim()).filter(Boolean);
+  });
+  document.querySelectorAll('#adminSystemList .field').forEach((row,i)=>{
+    CONTENT.systems[i].desc = row.querySelector('.s-desc').value;
+    CONTENT.systems[i].tags = row.querySelector('.s-tags').value.split(',').map(s=>s.trim()).filter(Boolean);
+  });
+  document.querySelectorAll('#adminBrandList .field').forEach((row,i)=>{
+    CONTENT.brands[i].desc = row.querySelector('.b-desc').value;
+  });
+  document.querySelectorAll('#adminActivityList .field').forEach((row,i)=>{
+    CONTENT.activities[i].desc = row.querySelector('.a-desc').value;
+  });
+
+  try{
+    const { error } = await sb.from(CONTENT_TABLE).upsert({
+      id:1,
+      hero:CONTENT.hero, about:CONTENT.about, team:CONTENT.team,
+      systems:CONTENT.systems, brands:CONTENT.brands, activities:CONTENT.activities,
+      updated_at: new Date().toISOString()
+    });
+    if(error) throw error;
+    saveMsg.textContent = "Tersimpan."; saveMsg.className = "form-msg ok";
+    renderAll();
+  }catch(err){
+    saveMsg.textContent = "Gagal simpan: " + err.message; saveMsg.className = "form-msg err";
+  }
+});
 </script>
 </body>
 </html>
