@@ -202,8 +202,8 @@ h1,h2,h3{font-family:var(--font-head);}
 .team-card:hover::before{opacity:1;animation-play-state:running;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .avatar{
-  width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-family:var(--font-head);font-weight:800;font-size:20px;color:#fff;margin-bottom:16px;
+  width:90px;height:160px;border-radius:20px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-head);font-weight:800;font-size:22px;color:#fff;margin-bottom:16px;
   background:linear-gradient(135deg,var(--xl-a),var(--axis-b));overflow:hidden;flex:none;
 }
 .avatar img{width:100%;height:100%;object-fit:cover;}
@@ -349,7 +349,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;}
 .admin-panel-section h4{font-size:14px;font-weight:800;margin-bottom:14px;}
 .admin-member-row{border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px;position:relative;}
 .admin-member-row .row-flex{display:flex;gap:14px;align-items:flex-start;}
-.admin-member-row .thumb{width:52px;height:52px;border-radius:50%;overflow:hidden;flex:none;background:linear-gradient(135deg,var(--xl-a),var(--axis-b));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;}
+.admin-member-row .thumb{width:38px;height:68px;border-radius:10px;overflow:hidden;flex:none;background:linear-gradient(135deg,var(--xl-a),var(--axis-b));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;}
 .admin-member-row .thumb img{width:100%;height:100%;object-fit:cover;}
 .admin-member-row .row-fields{flex:1;display:flex;flex-direction:column;gap:8px;}
 .admin-member-row input[type=file]{font-size:12px;color:var(--text-dim);}
@@ -403,7 +403,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;}
     </div>
     <div class="hero-stats" id="heroStats">
       <div class="hero-stat"><b data-count="5">0</b><span>TEAM MEMBERS</span></div>
-      <div class="hero-stat"><b data-count="10" data-suffix="+">0</b><span>REGIONAL AREAS</span></div>
+      <div class="hero-stat"><b data-count="9">0</b><span>REGIONAL AREAS</span></div>
       <div class="hero-stat"><b data-count="2">0</b><span>CORE SYSTEMS</span></div>
       <div class="hero-stat"><b data-count="3">0</b><span>BRANDS</span></div>
     </div>
@@ -419,7 +419,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;}
       <p class="lead" id="aboutLead" style="margin-top:20px;">Pandawa Team merupakan team support regional yang berfokus pada koordinasi, dukungan sistem, penyampaian update, serta sosialisasi kepada user di berbagai wilayah.</p>
       <p id="aboutBody">Pandawa Team is a regional support team focused on connecting people, systems and operational needs across multiple regions.</p>
       <div class="mini-list">
-        <div><span class="tick"></span>5 anggota, 10+ wilayah operasional di seluruh Indonesia</div>
+        <div><span class="tick"></span>5 anggota, 9 wilayah operasional di seluruh Indonesia</div>
         <div><span class="tick"></span>Menangani 2 sistem inti untuk operasional sales dan HR</div>
         <div><span class="tick"></span>Bekerja lintas ekosistem XL, AXIS, dan Smart</div>
       </div>
@@ -430,7 +430,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;}
         <span class="node" style="background:var(--smart-a);box-shadow:0 0 10px var(--smart-a);"></span>
       </div>
       <pre>team.status      : active
-regions.covered  : 10
+regions.covered  : 9
 systems.online   : DRIVE_OWS, HARPA
 last.sync        : realtime</pre>
     </div>
@@ -690,7 +690,7 @@ const DEFAULT_CONTENT = {
   hero: {
     sub: "Connecting People, Systems & Regions.",
     tag: "Digital Support · System Update · Regional Coordination",
-    stats: [{value:5,suffix:""},{value:10,suffix:"+"},{value:2,suffix:""},{value:3,suffix:""}]
+    stats: [{value:5,suffix:""},{value:9,suffix:""},{value:2,suffix:""},{value:3,suffix:""}]
   },
   about: {
     lead: "Pandawa Team merupakan team support regional yang berfokus pada koordinasi, dukungan sistem, penyampaian update, serta sosialisasi kepada user di berbagai wilayah.",
